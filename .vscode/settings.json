@@ -1,0 +1,30 @@
+{
+    "editor.rulers": [
+        80,
+        120
+    ],
+    "files.exclude": {
+        "**/*.pyc": true,
+        "**/LICENSE": false,
+        "**/*pycache*": true
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8",
+        "editor.formatOnSave": true,
+    },
+    "autopep8.args": [
+        "--max-line-length=120"
+    ],
+    "python.autoComplete.extraPaths": [
+        "/home/morteza/ur_ros2/ur_sim/install/ur_simulation/lib/python3.12/site-packages",
+        "/home/morteza/ur_ros2/ur_sim/install/robot_description/lib/python3.12/site-packages",
+        "/home/morteza/ur_ros2/ur_sim/install/gazebo_simulation/lib/python3.12/site-packages",
+        "/home/morteza/catkin_ws/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "pylint.args": [
+        "--disable=C0111",
+        "--max-line-length=120",
+        "--rcfile=<file>"
+    ]
+}
