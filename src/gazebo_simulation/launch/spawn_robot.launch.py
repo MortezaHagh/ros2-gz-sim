@@ -48,8 +48,9 @@ def generate_launch_description():
         name='robot_state_publisher_node',
         output="screen",
         emulate_tty=True,
-        parameters=[{'use_sim_time': use_sim_time_config,
-                     'robot_description': Command(['xacro ', urdf_file_path])}]
+        parameters=[{
+            'use_sim_time': use_sim_time_config,
+            'robot_description': Command(['xacro ', urdf_file_path])}]
     )
 
     # robot state publisher #
@@ -92,6 +93,11 @@ def generate_launch_description():
         remappings=[
             # there are no remappings for this robot description
         ],
+        # parameters=[{
+        #     'config_file': bridge_params,
+        #     'expand_gz_topic_names': True,
+        #     'use_sim_time': True,
+        # }],
         output="screen",
     )
 

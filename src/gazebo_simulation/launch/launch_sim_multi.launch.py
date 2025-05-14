@@ -26,7 +26,7 @@ def generate_launch_description():
     gz_sim = IncludeLaunchDescription(py_launch_des_sc)
 
     # spawn robot #
-    py_jt_sub = PathJoinSubstitution([pkg_dir, "launch", "spawn_robot_multi.launch.py"])
+    py_jt_sub = PathJoinSubstitution([pkg_dir, "launch", "spawn_robot_multi_v2.launch.py"])
     py_launch_des_sc = PythonLaunchDescriptionSource(py_jt_sub)
     spawn_multi = IncludeLaunchDescription(
         py_launch_des_sc,

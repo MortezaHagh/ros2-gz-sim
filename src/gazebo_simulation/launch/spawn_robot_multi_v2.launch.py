@@ -4,6 +4,7 @@ from launch.actions import DeclareLaunchArgument, LogInfo, GroupAction
 from launch.substitutions import Command, LaunchConfiguration
 from launch.conditions import IfCondition, UnlessCondition
 from launch_ros.actions import Node, PushRosNamespace
+from launch.substitutions.find_executable import FindExecutable
 from ament_index_python.packages import get_package_share_directory
 
 
@@ -21,7 +22,7 @@ def generate_launch_description():
         description="Use simulation time")
 
     # load urdf file #
-    urdf_file = "uvc_robot_m.xacro"
+    urdf_file = "uvc_robot.xacro"
     urdf_file_path = os.path.join(pkg_dir, "urdf", urdf_file)
 
     #
@@ -53,15 +54,6 @@ def generate_launch_description():
             msg=f"Spawning robot: {robot_ns}"
         )
 
-        # # static_transform_publisher #
-        # tf_static = Node(
-        #     package='tf2_ros',
-        #     executable='static_transform_publisher',
-        #     name=f'static_transform_publisher_{robot_ns}',
-        #     output='screen',
-        #     arguments=['0', '0', '0', '0', '0', '0', 'map', robot_ns+'/odom'],
-        # )
-
         # robot state publisher #
         robot_state_publisher_node = Node(
             package='robot_state_publisher',
@@ -73,8 +65,7 @@ def generate_launch_description():
             parameters=[{
                 'frame_prefix': f'{robot_ns}/',
                 'use_sim_time': use_sim_time_config,
-                'robot_description': Command(['xacro ', urdf_file_path, ' robot_name:=', robot_ns])}],
-            # remappings=[('/tf', 'tf'), ('/tf_static', 'tf_static')]
+                'robot_description': Command(['xacro ', urdf_file_path, ' robot_name:=', robot_ns])}]
         )
 
         # robot state publisher #
@@ -98,9 +89,10 @@ def generate_launch_description():
             namespace=robot_ns,
             parameters=[{'use_sim_time': use_sim_time_config}],
             arguments=[
-                "-name", "uvc_robot"+robot_ns,
-                "-allow_renaming", "true",
-                "-topic", "robot_description",
+                "-name", "uvc_robot_"+robot_ns,
+                '-string', Command([FindExecutable(name='xacro'), ' ', 'namespace:=', robot_ns, ' ', urdf_file_path]),
+                # "-allow_renaming", "true",
+                # "-topic", "robot_description",
                 "-x", "0.0",
                 "-y", y,
                 "-z", "0.5",
@@ -109,14 +101,16 @@ def generate_launch_description():
         )
 
         # ROS-Gazebo Bridge #
-        file_name = "gz_bridge_ns_" + robot_ns + ".yaml"
+        file_name = "gz_bridge.yaml"
         bridge_params = os.path.join(pkg_dir, "params", file_name)
         gz_bridge = Node(
             package="ros_gz_bridge",
             executable="parameter_bridge",
-            name=f"gz_bridge{robot_ns}",
-            arguments=['--ros-args', '-p', f'config_file:={bridge_params}'],
-            # remappings=[# there are no remappings for this robot description],
+            namespace=robot_ns,
+            parameters=[{
+                    'config_file': bridge_params,
+                    'expand_gz_topic_names': True,
+                    'use_sim_time': use_sim_time_config}],
             output="screen",
         )
 
