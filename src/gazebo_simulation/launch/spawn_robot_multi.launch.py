@@ -1,8 +1,9 @@
 import os
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, LogInfo, GroupAction
 from launch.substitutions import Command, LaunchConfiguration
-from launch_ros.actions import Node
+from launch.conditions import IfCondition, UnlessCondition
+from launch_ros.actions import Node, PushRosNamespace
 from ament_index_python.packages import get_package_share_directory
 
 
@@ -20,14 +21,35 @@ def generate_launch_description():
         description="Use simulation time")
 
     # load urdf file #
-    urdf_file = "uvc_robot.xacro"
+    urdf_file = "uvc_robot_m.xacro"
     urdf_file_path = os.path.join(pkg_dir, "urdf", urdf_file)
 
     #
-    nodes = []
+    nodes = [declare_use_sim_time_config]
 
+    # Log message if simulation time is enabled
+    log_sim_time = LogInfo(
+        condition=IfCondition(use_sim_time_config),
+        msg="Simulation time is enabled."
+    )
+    nodes.append(log_sim_time)
+    # Log message if simulation time is disabled
+    log_sim_time_disabled = LogInfo(
+        condition=UnlessCondition(use_sim_time_config),
+        msg="Simulation time is disabled."
+    )
+    nodes.append(log_sim_time_disabled)
+
+    #
     for i in range(1, 3):
+        # g = [PushRosNamespace(robot_ns)]
+        g = []
         robot_ns = "r" + str(i)
+
+        # Log message for spawning robot
+        log_robot_spawn = LogInfo(
+            msg=f"Spawning robot: {robot_ns}"
+        )
 
         # # static_transform_publisher #
         # tf_static = Node(
@@ -94,11 +116,14 @@ def generate_launch_description():
         )
 
         #
-        # nodes.append(tf_static)
-        nodes.append(robot_state_publisher_node)
-        # nodes.append(joint_state_publisher_node)
-        nodes.append(gz_spawn_node)
-        nodes.append(gz_bridge)
+        # g.append(tf_static)
+        g.append(robot_state_publisher_node)
+        # g.append(joint_state_publisher_node)
+        g.append(gz_spawn_node)
+        g.append(gz_bridge)
+        group = GroupAction(g)
+        nodes.append(group)
+
     # end for loop #
 
     #

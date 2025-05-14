@@ -1,6 +1,6 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, LogInfo
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node, SetParameter
@@ -34,7 +34,7 @@ def generate_launch_description():
     )
 
     # Load RViz Configuration File #
-    rviz_config_file = "config.rviz"
+    rviz_config_file = "ns_config.rviz"
     rviz_config_path = os.path.join(pkg_dir, "rviz", rviz_config_file)
     print("RViz Config Loaded !")
 
@@ -52,6 +52,11 @@ def generate_launch_description():
     #
     sim_time_param = SetParameter(name="use_sim_time", value=use_sim_time_config)
 
+    # Log message
+    log_finished = LogInfo(
+        msg="All launched."
+    )
+
     # LaunchDescription
     ld = LaunchDescription(
         [
@@ -59,7 +64,8 @@ def generate_launch_description():
             sim_time_param,
             gz_sim,
             spawn_multi,
-            rviz_node
+            rviz_node,
+            log_finished
         ]
     )
     return ld

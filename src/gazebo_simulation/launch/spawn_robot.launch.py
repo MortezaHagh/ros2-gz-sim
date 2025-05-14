@@ -1,7 +1,8 @@
 import os
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, LogInfo
 from launch.substitutions import Command, LaunchConfiguration
+from launch.conditions import IfCondition
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
@@ -18,6 +19,12 @@ def generate_launch_description():
         "use_sim_time",
         default_value="true",
         description="Use simulation time")
+
+    # Log message if simulation time is enabled
+    log_sim_time = LogInfo(
+        condition=IfCondition(use_sim_time_config),
+        msg="Simulation time is enabled."
+    )
 
     # if 'GAZEBO_MODEL_PATH' in os.environ:
     #     os.environ['GAZEBO_MODEL_PATH'] =  os.environ['GAZEBO_MODEL_PATH'] + ':' + install_dir + '/share' + ':' + gazebo_models_path
@@ -91,6 +98,7 @@ def generate_launch_description():
     #
     return LaunchDescription([
         declare_use_sim_time_config,
+        log_sim_time,
         robot_state_publisher_node,
         joint_state_publisher_node,
         gz_spawn_node,
