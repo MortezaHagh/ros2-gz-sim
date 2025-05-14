@@ -13,7 +13,7 @@
         "editor.formatOnSave": true,
     },
     "autopep8.args": [
-        "--max-line-length=120"
+        "--max-line-length=140"
     ],
     "python.autoComplete.extraPaths": [
         "/home/morteza/ur_ros2/ur_sim/install/ur_simulation/lib/python3.12/site-packages",
@@ -25,6 +25,8 @@
     "pylint.args": [
         "--disable=C0111",
         "--max-line-length=120",
-        "--rcfile=<file>"
-    ]
+    ],
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingImports": "none"
+    }
 }

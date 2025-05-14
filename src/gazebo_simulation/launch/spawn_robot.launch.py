@@ -1,7 +1,8 @@
 import os
 from launch import LaunchDescription
-from launch.substitutions import Command
-from launch_ros.actions import Node, SetParameter
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import Command, LaunchConfiguration
+from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
 
@@ -10,6 +11,13 @@ def generate_launch_description():
     # robot description pkg #
     pkg_name = "robot_description"
     pkg_dir = get_package_share_directory(pkg_name)
+
+    # sim time config #
+    use_sim_time_config = LaunchConfiguration("use_sim_time")
+    declare_use_sim_time_config = DeclareLaunchArgument(
+        "use_sim_time",
+        default_value="true",
+        description="Use simulation time")
 
     # if 'GAZEBO_MODEL_PATH' in os.environ:
     #     os.environ['GAZEBO_MODEL_PATH'] =  os.environ['GAZEBO_MODEL_PATH'] + ':' + install_dir + '/share' + ':' + gazebo_models_path
@@ -33,7 +41,7 @@ def generate_launch_description():
         name='robot_state_publisher_node',
         output="screen",
         emulate_tty=True,
-        parameters=[{'use_sim_time': True,
+        parameters=[{'use_sim_time': use_sim_time_config,
                      'robot_description': Command(['xacro ', urdf_file_path])}]
     )
 
@@ -43,7 +51,7 @@ def generate_launch_description():
         executable='joint_state_publisher',
         name='joint_state_publisher',
         output='screen',
-        parameters=[{'use_sim_time': True}],
+        parameters=[{'use_sim_time': use_sim_time_config}],
     )
 
     # spawn robot #
@@ -51,7 +59,7 @@ def generate_launch_description():
         package="ros_gz_sim",
         executable="create",
         name="uvc_robot_spawn",
-        parameters=[{'use_sim_time': True}],
+        parameters=[{'use_sim_time': use_sim_time_config}],
         arguments=[
             "-name", "uvc_robot",
             "-allow_renaming", "true",
@@ -80,12 +88,9 @@ def generate_launch_description():
         output="screen",
     )
 
-    # parametes #
-    sim_time_param = SetParameter(name="use_sim_time", value=True)
-
     #
     return LaunchDescription([
-        sim_time_param,
+        declare_use_sim_time_config,
         robot_state_publisher_node,
         joint_state_publisher_node,
         gz_spawn_node,

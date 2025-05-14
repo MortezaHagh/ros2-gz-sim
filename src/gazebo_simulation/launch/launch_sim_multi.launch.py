@@ -1,9 +1,9 @@
 import os
-from launch_ros.actions import Node, SetParameter
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
-from launch.substitutions import PathJoinSubstitution
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node, SetParameter
 from ament_index_python.packages import get_package_share_directory
 
 
@@ -13,16 +13,25 @@ def generate_launch_description():
     pkg_name = "gazebo_simulation"
     pkg_dir = get_package_share_directory(pkg_name)
 
+    # config #
+    use_sim_time_config = LaunchConfiguration("use_sim_time")
+    declare_use_sim_time_config = DeclareLaunchArgument(
+        "use_sim_time",
+        default_value="true",
+        description="Use simulation time")
+
     # Launch world #
-    pjs = PathJoinSubstitution([pkg_dir, "launch", "launch_world.launch.py"])
-    plds = PythonLaunchDescriptionSource(pjs)
-    gz_sim = IncludeLaunchDescription(plds)
+    py_jt_sub = PathJoinSubstitution([pkg_dir, "launch", "launch_world.launch.py"])
+    py_launch_des_sc = PythonLaunchDescriptionSource(py_jt_sub)
+    gz_sim = IncludeLaunchDescription(py_launch_des_sc)
 
     # spawn robot #
-    pjs = PathJoinSubstitution([pkg_dir, "launch", "spawn_robot_multi.launch.py"])
-    plds = PythonLaunchDescriptionSource(pjs)
-    spawn_multi = IncludeLaunchDescription(plds)
-    # PushROSNamespace('turtlesim2'),
+    py_jt_sub = PathJoinSubstitution([pkg_dir, "launch", "spawn_robot_multi.launch.py"])
+    py_launch_des_sc = PythonLaunchDescriptionSource(py_jt_sub)
+    spawn_multi = IncludeLaunchDescription(
+        py_launch_des_sc,
+        launch_arguments={"use_sim_time": use_sim_time_config}.items()
+    )
 
     # Load RViz Configuration File #
     rviz_config_file = "config.rviz"
@@ -41,12 +50,12 @@ def generate_launch_description():
     )
 
     #
-    use_sim_time = True
-    sim_time_param = SetParameter(name="use_sim_time", value=use_sim_time)
+    sim_time_param = SetParameter(name="use_sim_time", value=use_sim_time_config)
 
     # LaunchDescription
     ld = LaunchDescription(
         [
+            declare_use_sim_time_config,
             sim_time_param,
             gz_sim,
             spawn_multi,

@@ -1,7 +1,8 @@
 import os
 from launch import LaunchDescription
-from launch.substitutions import Command
-from launch_ros.actions import Node, SetParameter
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import Command, LaunchConfiguration
+from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
 
@@ -11,12 +12,18 @@ def generate_launch_description():
     pkg_name = "robot_description"
     pkg_dir = get_package_share_directory(pkg_name)
 
+    # sim time config #
+    use_sim_time_config = LaunchConfiguration("use_sim_time")
+    declare_use_sim_time_config = DeclareLaunchArgument(
+        "use_sim_time",
+        default_value="true",
+        description="Use simulation time")
+
     # load urdf file #
     urdf_file = "uvc_robot.xacro"
     urdf_file_path = os.path.join(pkg_dir, "urdf", urdf_file)
 
     #
-    use_sim_time = True
     nodes = []
 
     for i in range(1, 3):
@@ -39,7 +46,7 @@ def generate_launch_description():
             output="screen",
             namespace=robot_ns,
             emulate_tty=True,
-            parameters=[{'frame_prefix': f'{robot_ns}/', 'use_sim_time': use_sim_time,
+            parameters=[{'frame_prefix': f'{robot_ns}/', 'use_sim_time': use_sim_time_config,
                         'robot_description': Command(['xacro ', urdf_file_path, ' robot_name:=', robot_ns])}]
         )
 
@@ -50,7 +57,7 @@ def generate_launch_description():
             name=f'joint_state_publisher',
             output='screen',
             namespace=robot_ns,
-            parameters=[{'use_sim_time': use_sim_time}],
+            parameters=[{'use_sim_time': use_sim_time_config}],
         )
 
         # spawn robot #
@@ -62,7 +69,7 @@ def generate_launch_description():
             executable="create",
             name=f"robot_spawn",
             namespace=robot_ns,
-            parameters=[{'use_sim_time': use_sim_time}],
+            parameters=[{'use_sim_time': use_sim_time_config}],
             arguments=[
                 "-name", "uvc_robot"+robot_ns,
                 "-allow_renaming", "true",
@@ -93,10 +100,6 @@ def generate_launch_description():
         nodes.append(gz_spawn_node)
         nodes.append(gz_bridge)
     # end for loop #
-
-    # parametes #
-    sim_time_param = SetParameter(name="use_sim_time", value=use_sim_time)
-    nodes.insert(0, sim_time_param)
 
     #
     return LaunchDescription(nodes)
