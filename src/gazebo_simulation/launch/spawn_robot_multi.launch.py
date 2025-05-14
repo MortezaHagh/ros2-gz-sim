@@ -16,9 +16,10 @@ def generate_launch_description():
     urdf_file_path = os.path.join(pkg_dir, "urdf", urdf_file)
 
     #
+    use_sim_time = True
     nodes = []
 
-    for i in range(1, 2):
+    for i in range(1, 3):
         robot_ns = "r" + str(i)
 
         # # static_transform_publisher #
@@ -38,7 +39,7 @@ def generate_launch_description():
             output="screen",
             namespace=robot_ns,
             emulate_tty=True,
-            parameters=[{'frame_prefix': f'{robot_ns}/', 'use_sim_time': True,
+            parameters=[{'frame_prefix': f'{robot_ns}/', 'use_sim_time': use_sim_time,
                         'robot_description': Command(['xacro ', urdf_file_path, ' robot_name:=', robot_ns])}]
         )
 
@@ -49,7 +50,7 @@ def generate_launch_description():
             name=f'joint_state_publisher',
             output='screen',
             namespace=robot_ns,
-            parameters=[{'use_sim_time': True}],
+            parameters=[{'use_sim_time': use_sim_time}],
         )
 
         # spawn robot #
@@ -61,7 +62,7 @@ def generate_launch_description():
             executable="create",
             name=f"robot_spawn",
             namespace=robot_ns,
-            parameters=[{'use_sim_time': True}],
+            parameters=[{'use_sim_time': use_sim_time}],
             arguments=[
                 "-name", "uvc_robot"+robot_ns,
                 "-allow_renaming", "true",
@@ -88,13 +89,13 @@ def generate_launch_description():
         #
         # nodes.append(tf_static)
         nodes.append(robot_state_publisher_node)
-        nodes.append(joint_state_publisher_node)
+        # nodes.append(joint_state_publisher_node)
         nodes.append(gz_spawn_node)
         nodes.append(gz_bridge)
     # end for loop #
 
     # parametes #
-    sim_time_param = SetParameter(name="use_sim_time", value=True)
+    sim_time_param = SetParameter(name="use_sim_time", value=use_sim_time)
     nodes.insert(0, sim_time_param)
 
     #

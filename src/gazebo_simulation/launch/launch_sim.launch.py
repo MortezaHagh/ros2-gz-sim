@@ -21,7 +21,7 @@ def generate_launch_description():
     # spawn robot #
     pjs = PathJoinSubstitution([pkg_dir, "launch", "spawn_robot.launch.py"])
     plds = PythonLaunchDescriptionSource(pjs)
-    spawn_sim = IncludeLaunchDescription(plds)
+    spawn_robot = IncludeLaunchDescription(plds)
 
     # Load RViz Configuration File #
     rviz_config_file = "config.rviz"
@@ -43,7 +43,7 @@ def generate_launch_description():
     ld = LaunchDescription(
         [
             gz_sim,
-            spawn_sim,
+            spawn_robot,
             rviz_node
         ]
     )

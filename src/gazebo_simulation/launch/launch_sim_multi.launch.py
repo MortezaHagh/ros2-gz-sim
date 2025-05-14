@@ -1,5 +1,5 @@
 import os
-from launch_ros.actions import Node
+from launch_ros.actions import Node, SetParameter
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.substitutions import PathJoinSubstitution
@@ -40,9 +40,14 @@ def generate_launch_description():
         arguments=['-d', rviz_config_path],
     )
 
+    #
+    use_sim_time = True
+    sim_time_param = SetParameter(name="use_sim_time", value=use_sim_time)
+
     # LaunchDescription
     ld = LaunchDescription(
         [
+            sim_time_param,
             gz_sim,
             spawn_multi,
             rviz_node

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="uvc_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:arg name="robot_name" default="r2" />
+    <xacro:arg name="robot_name" default="" />
     <xacro:property name="robot_name" value="$(arg robot_name)" />
 
     <gazebo reference="base_link">
@@ -44,13 +44,13 @@
     </gazebo>
 
     <!-- velodyne_laserscan ===============================================  -->
-
+    <!-- 
     <gazebo>
         <plugin
             filename="libgz-sim-sensors-system"
             name="gz::sim::systems::Sensors">
         </plugin>
-    </gazebo>
+    </gazebo> -->
     <gazebo reference="velodyne_laserscan">
         <sensor type="gpu_lidar" name="velodyne_laserscan">
             <pose>0.2 0 0 0 0 0</pose>
@@ -79,6 +79,11 @@
                     <stddev>0.01</stddev>
                 </noise>
             </ray>
+
+            <!-- <plugin
+                filename="libgz-sim-sensors-system"
+                name="gz::sim::systems::Sensors">
+            </plugin> -->
         </sensor>
     </gazebo>
 
