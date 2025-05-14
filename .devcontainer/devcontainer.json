@@ -20,7 +20,8 @@
                 "donjayamanne.python-extension-pack",
                 "eamodio.gitlens",
                 "ms-iot.vscode-ros",
-                "redhat.vscode-xml"
+                "redhat.vscode-xml",
+                "ms-python.python",
             ]
         }
     },

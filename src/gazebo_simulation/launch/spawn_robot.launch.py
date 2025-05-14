@@ -21,7 +21,7 @@ def generate_launch_description():
     # else:
     #     os.environ['GAZEBO_PLUGIN_PATH'] = install_dir + '/lib'
 
-    # load world file #
+    # load urdf file #
     urdf_file = "uvc_robot.xacro"
     urdf_file_path = os.path.join(pkg_dir, "urdf", urdf_file)
     print("urdf_file_path", urdf_file_path)
@@ -37,6 +37,7 @@ def generate_launch_description():
                      'robot_description': Command(['xacro ', urdf_file_path])}]
     )
 
+    # robot state publisher #
     joint_state_publisher_node = Node(
         package='joint_state_publisher',
         executable='joint_state_publisher',
@@ -45,7 +46,7 @@ def generate_launch_description():
         parameters=[{'use_sim_time': True}],
     )
 
-    # robot state publisher #
+    # spawn robot #
     gz_spawn_node = Node(
         package="ros_gz_sim",
         executable="create",
@@ -63,22 +64,15 @@ def generate_launch_description():
     )
 
     # ROS-Gazebo Bridge #
-    ign_bridge = Node(
+    bridge_params = os.path.join(pkg_dir, "params", "gz_bridge.yaml")
+    gz_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
         name="gz_bridge",
         arguments=[
-            "/clock" + "@rosgraph_msgs/msg/Clock" + "[gz.msgs.Clock",
-            "/cmd_vel" + "@geometry_msgs/msg/Twist" + "@gz.msgs.Twist",
-            "/tf" + "@tf2_msgs/msg/TFMessage" + "[gz.msgs.Pose_V",
-            "/odom" + "@nav_msgs/msg/Odometry" + "[gz.msgs.Odometry",
-            "/velodyne_laserscan" + "@sensor_msgs/msg/LaserScan" +
-                "[gz.msgs.LaserScan",
-            "/imu" + "@sensor_msgs/msg/Imu" + "[gz.msgs.IMU",
-            "/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
-            "/usb_cam/image@sensor_msgs/msg/Image[gz.msgs.Image",
-            "/usb_cam/depth_image@sensor_msgs/msg/Image[gz.msgs.Image",
-            "/usb_cam/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked"
+            '--ros-args',
+            '-p',
+            f'config_file:={bridge_params}',
         ],
         remappings=[
             # there are no remappings for this robot description
@@ -90,21 +84,10 @@ def generate_launch_description():
     sim_time_param = SetParameter(name="use_sim_time", value=True)
 
     #
-    tf_static = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='static_transform_publisher',
-        output='screen',
-        arguments=['0', '0', '1.5', '0', '0', '0', 'base_link',
-                   'uvc_robot/velodyne_laserscan/head_hokuyo_sensor'],
-    )
-
-    #
     return LaunchDescription([
         sim_time_param,
         robot_state_publisher_node,
         joint_state_publisher_node,
-        # tf_static,
         gz_spawn_node,
-        ign_bridge,
+        gz_bridge,
     ])
