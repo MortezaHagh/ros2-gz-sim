@@ -47,20 +47,20 @@ def generate_launch_description():
         # g = [PushRosNamespace(robot_ns)]
         g = []
         robot_ns = "r" + str(i)
+        y = str((i-1)*2.0)
 
         # Log message for spawning robot
         log_robot_spawn = LogInfo(
             msg=f"Spawning robot: {robot_ns}"
         )
 
-        # # static_transform_publisher #
-        # tf_static = Node(
-        #     package='tf2_ros',
-        #     executable='static_transform_publisher',
-        #     name=f'static_transform_publisher_{robot_ns}',
-        #     output='screen',
-        #     arguments=['0', '0', '0', '0', '0', '0', 'map', robot_ns+'/odom'],
-        # )
+        tf_static = Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name=f'static_transform_publisher_{robot_ns}',
+            output='screen',
+            arguments=['0', y, '0', '0', '0', '0', 'map', robot_ns+'/odom'],
+        )
 
         # robot state publisher #
         robot_state_publisher_node = Node(
@@ -73,7 +73,7 @@ def generate_launch_description():
             parameters=[{
                 'frame_prefix': f'{robot_ns}/',
                 'use_sim_time': use_sim_time_config,
-                'robot_description': Command(['xacro ', urdf_file_path, ' robot_name:=', robot_ns])}],
+                'robot_description': Command(['xacro ', urdf_file_path, ' namespace:=', robot_ns])}],
             # remappings=[('/tf', 'tf'), ('/tf_static', 'tf_static')]
         )
 
@@ -88,9 +88,6 @@ def generate_launch_description():
         )
 
         # spawn robot #
-        y = "0.0"
-        if robot_ns == "r2":
-            y = "2.0"
         gz_spawn_node = Node(
             package="ros_gz_sim",
             executable="create",
@@ -109,19 +106,23 @@ def generate_launch_description():
         )
 
         # ROS-Gazebo Bridge #
-        file_name = "gz_bridge_ns_" + robot_ns + ".yaml"
+        file_name = "gz_bridge.yaml"
         bridge_params = os.path.join(pkg_dir, "params", file_name)
         gz_bridge = Node(
             package="ros_gz_bridge",
             executable="parameter_bridge",
+            namespace=robot_ns,
             name=f"gz_bridge{robot_ns}",
-            arguments=['--ros-args', '-p', f'config_file:={bridge_params}'],
-            # remappings=[# there are no remappings for this robot description],
+            parameters=[{
+                    'config_file': bridge_params,
+                    'expand_gz_topic_names': True,
+                    'use_sim_time': use_sim_time_config}],
+            remappings=[(f'/{robot_ns}/tf', '/tf')],
             output="screen",
         )
 
         #
-        # g.append(tf_static)
+        g.append(tf_static)
         g.append(log_robot_spawn)
         g.append(robot_state_publisher_node)
         # g.append(joint_state_publisher_node)

@@ -13,8 +13,8 @@ def generate_launch_description():
     pkg_dir = get_package_share_directory(pkg_name)
 
     # load world file #
-    # world_file_path = "empty.sdf"
-    world_file = "slide_1.world"
+    # world_file = "empty.world.sdf"
+    world_file = "test2.world"
     world_file_path = os.path.join(pkg_dir, "worlds", world_file)
     world_config = LaunchConfiguration("world")
     declare_world_arg = DeclareLaunchArgument(

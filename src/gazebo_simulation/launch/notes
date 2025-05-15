@@ -1,0 +1,60 @@
+# # static_transform_publisher #
+# tf_static = Node(
+#     package='tf2_ros',
+#     executable='static_transform_publisher',
+#     name=f'static_transform_publisher_{robot_ns}',
+#     output='screen',
+#     arguments=['0', '0', '0', '0', '0', '0', 'map', robot_ns+'/odom'],
+# )
+
+# ------------------------------------------------------------------------------
+
+# bridge_params = os.path.join(pkg_dir, "params", "gz_bridge.yaml")
+# gz_bridge = Node(
+#     package="ros_gz_bridge",
+#     executable="parameter_bridge",
+#     # namespace="",
+#     name="gz_bridge",
+#     parameters=[{
+#         'config_file': bridge_params,
+#         # 'expand_gz_topic_names': True,
+#         'use_sim_time': True,
+#     }],
+#     # arguments=['--ros-args', '-p', f'config_file:={bridge_params}'],
+#     # remappings=[
+#     #     # there are no remappings for this robot description
+#     # ],
+#     output="screen",
+# )
+
+# ------------------------------------------------------------------------------
+
+# # spawn robot #
+# gz_spawn_node = Node(
+#     package="ros_gz_sim",
+#     executable="create",
+#     name="uvc_robot_spawn",
+#     parameters=[{'use_sim_time': use_sim_time_config}],
+#     arguments=[
+#         "-name", "uvc_robot",
+#          "-allow_renaming", "true",
+#             "-topic", "robot_description",
+#             # '-string', Command([FindExecutable(name='xacro'), ' ', 'namespace:=', robot_ns, ' ', urdf_file_path]),
+#             "-x", "0.0",
+#             "-y", "0.0",
+#             "-z", "0.5",
+#     ],
+#     output="screen",
+# )
+
+# ------------------------------------------------------------------------------
+
+# if 'GAZEBO_MODEL_PATH' in os.environ:
+#     os.environ['GAZEBO_MODEL_PATH'] =  os.environ['GAZEBO_MODEL_PATH'] + ':' + install_dir + '/share' + ':' + gazebo_models_path
+# else:
+#     os.environ['GAZEBO_MODEL_PATH'] =  install_dir + "/share" + ':' + gazebo_models_path
+
+# if 'GAZEBO_PLUGIN_PATH' in os.environ:
+#     os.environ['GAZEBO_PLUGIN_PATH'] = os.environ['GAZEBO_PLUGIN_PATH'] + ':' + install_dir + '/lib'
+# else:
+#     os.environ['GAZEBO_PLUGIN_PATH'] = install_dir + '/lib'

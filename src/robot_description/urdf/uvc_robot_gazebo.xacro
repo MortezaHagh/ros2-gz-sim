@@ -40,14 +40,9 @@
         </plugin>
     </gazebo>
 
-    <!-- velodyne_laserscan ===============================================  -->
+    <!-- sensors ===============================================  -->
 
-    <!-- <gazebo>
-        <plugin
-            filename="libgz-sim-sensors-system"
-            name="gz::sim::systems::Sensors">
-        </plugin>
-    </gazebo> -->
+    <!-- velodyne_laserscan ===============================================  -->
     <gazebo reference="velodyne_laserscan">
         <sensor type="gpu_lidar" name="velodyne_laserscan">
             <pose>0.2 0 0 0 0 0</pose>

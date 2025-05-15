@@ -85,19 +85,10 @@ def generate_launch_description():
         package="ros_gz_bridge",
         executable="parameter_bridge",
         name="gz_bridge",
-        arguments=[
-            '--ros-args',
-            '-p',
-            f'config_file:={bridge_params}',
-        ],
-        remappings=[
-            # there are no remappings for this robot description
-        ],
-        # parameters=[{
-        #     'config_file': bridge_params,
-        #     'expand_gz_topic_names': True,
-        #     'use_sim_time': True,
-        # }],
+        parameters=[{
+            'config_file': bridge_params,
+            'use_sim_time': True,
+        }],
         output="screen",
     )
 
