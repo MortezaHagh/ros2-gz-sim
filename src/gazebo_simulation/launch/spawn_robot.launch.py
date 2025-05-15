@@ -26,16 +26,6 @@ def generate_launch_description():
         msg="Simulation time is enabled."
     )
 
-    # if 'GAZEBO_MODEL_PATH' in os.environ:
-    #     os.environ['GAZEBO_MODEL_PATH'] =  os.environ['GAZEBO_MODEL_PATH'] + ':' + install_dir + '/share' + ':' + gazebo_models_path
-    # else:
-    #     os.environ['GAZEBO_MODEL_PATH'] =  install_dir + "/share" + ':' + gazebo_models_path
-
-    # if 'GAZEBO_PLUGIN_PATH' in os.environ:
-    #     os.environ['GAZEBO_PLUGIN_PATH'] = os.environ['GAZEBO_PLUGIN_PATH'] + ':' + install_dir + '/lib'
-    # else:
-    #     os.environ['GAZEBO_PLUGIN_PATH'] = install_dir + '/lib'
-
     # load urdf file #
     urdf_file = "uvc_robot.xacro"
     urdf_file_path = os.path.join(pkg_dir, "urdf", urdf_file)

@@ -66,7 +66,7 @@ def generate_launch_description():
         robot_state_publisher_node = Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
-            name=f'robot_state_publisher',
+            name='robot_state_publisher',
             output="screen",
             namespace=robot_ns,
             emulate_tty=True,
@@ -81,7 +81,7 @@ def generate_launch_description():
         joint_state_publisher_node = Node(
             package='joint_state_publisher',
             executable='joint_state_publisher',
-            name=f'joint_state_publisher',
+            name='joint_state_publisher',
             output='screen',
             namespace=robot_ns,
             parameters=[{'use_sim_time': use_sim_time_config}],
@@ -91,7 +91,7 @@ def generate_launch_description():
         gz_spawn_node = Node(
             package="ros_gz_sim",
             executable="create",
-            name=f"robot_spawn",
+            name="robot_spawn",
             namespace=robot_ns,
             parameters=[{'use_sim_time': use_sim_time_config}],
             arguments=[

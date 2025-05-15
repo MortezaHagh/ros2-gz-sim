@@ -24,6 +24,8 @@ RUN apt-get update \
 #     && apt-get update \
 #     && apt-get install -y gz-harmonic
 
+RUN echo "source /opt/ros/jazzy/setup.bash" >> /home/$USERNAME/.bashrc \
+    && echo "source install/setup.bash" >> /home/$USERNAME/.bashrc
 
 ENV SHELL /bin/bash
 
