@@ -19,15 +19,16 @@ def generate_launch_description():
     world_config = LaunchConfiguration("world")
     declare_world_arg = DeclareLaunchArgument(
         "world",
-        default_value = world_file_path,
+        default_value=["-r ", world_file_path],
         description="SDF World File")
 
     # Declare GazeboSim Launch #
+    # gzsim_pkg = FindPackageShare("ros_gz_sim")
     gzsim_pkg = get_package_share_directory("ros_gz_sim")
-    py_jt_sub = PathJoinSubstitution([gzsim_pkg, "launch", "gz_server.launch.py"])
+    py_jt_sub = PathJoinSubstitution([gzsim_pkg, "launch", "gz_sim.launch.py"])
     py_launch_des_sc = PythonLaunchDescriptionSource(py_jt_sub)
-    gz_sim = IncludeLaunchDescription(py_launch_des_sc, launch_arguments={"world_sdf_file": world_config}.items())
-    
+    gz_sim = IncludeLaunchDescription(py_launch_des_sc, launch_arguments={"gz_args": world_config}.items())
+
     # LaunchDescription
     ld = LaunchDescription(
         [

@@ -21,7 +21,8 @@ def generate_launch_description():
         description="Use simulation time")
 
     # Launch world #
-    py_jt_sub = PathJoinSubstitution([pkg_dir, "launch", "launch_world.launch.py"])
+    py_jt_sub = PathJoinSubstitution([pkg_dir, "launch", "launch_world_sim.launch.py"])
+    # py_jt_sub = PathJoinSubstitution([pkg_dir, "launch", "launch_world.launch.py"])
     py_launch_des_sc = PythonLaunchDescriptionSource(py_jt_sub)
     gz_sim = IncludeLaunchDescription(py_launch_des_sc)
 
